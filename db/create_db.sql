@@ -31,6 +31,7 @@ create table measure (
   valid boolean not null
 );
 create unique index idx_measure on measure(station_id, variable_id, date, hour);
+create index idx_measure_var_date on measure(variable_id, date);
 
 create table warning_forecast (
   id serial primary key,
@@ -39,4 +40,3 @@ create table warning_forecast (
   warning boolean not null
 );
 create unique index idx_warning_forecast on warning_forecast(date);
-
