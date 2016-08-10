@@ -1,7 +1,9 @@
 import bottle
+from bottle import request
 import bottle_pgsql
 import json
 import decimal
+from datetime import datetime
 
 ###############################################################################
 # Initialization                                                              #
@@ -22,18 +24,16 @@ app.install(plugin)
 ###############################################################################
 
 
-class number_str(float):
-
-  def __init__(self, o):
-    self.o = o
-
-  def __repr__(self):
-    return str(self.o)
+def date_serializer(o):
+  if hasattr(obj, 'isoformat'):
+    return obj.isoformat()
 
 
 def decimal_serializer(o):
   if isinstance(o, decimal.Decimal):
-    return number_str(o)
+    return str(o)
+  elif hasattr(o, 'isoformat'):
+    return o.isoformat()
   raise TypeError(repr(o) + " is not JSON serializable")
 
 
@@ -53,6 +53,18 @@ def to_json(rows):
 @app.route("/stations")
 def stations(db):
   rows = query_db(db, "SELECT * from station")
+  return to_json(rows)
+
+
+@app.route("/measures")
+def measures(db):
+  from_date = datetime.strptime(request.query.start, '%Y-%m-%d')
+  to_date = datetime.strptime(request.query.end, '%Y-%m-%d')
+  rows = query_db(db, '''SELECT * from measure
+                         WHERE variable_id = 8
+                         AND date >= %s
+                         AND date <= %s''',
+                  (from_date, to_date))
   return to_json(rows)
 
 ###############################################################################
