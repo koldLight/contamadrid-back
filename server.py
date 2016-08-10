@@ -31,6 +31,7 @@ class EnableCors(object):
   def apply(self, fn, context):
     def _enable_cors(*args, **kwargs):
       # set CORS headers
+      response.headers['Content-Type'] = 'application/json; charset=UTF-8'
       response.headers['Access-Control-Allow-Origin'] = '*'
       response.headers[
           'Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
@@ -44,12 +45,7 @@ class EnableCors(object):
     return _enable_cors
 
 
-def date_serializer(o):
-  if hasattr(obj, 'isoformat'):
-    return obj.isoformat()
-
-
-def decimal_serializer(o):
+def my_serializer(o):
   if isinstance(o, decimal.Decimal):
     return str(o)
   elif hasattr(o, 'isoformat'):
@@ -64,7 +60,7 @@ def query_db(db, query, args=(), one=False):
 
 def to_json(rows, status=200, message="OK"):
   result = {"status": status, "message": message, "data": rows}
-  return json.dumps(result, default=decimal_serializer)
+  return json.dumps(result, default=my_serializer)
 
 ###############################################################################
 # Controllers                                                                 #
