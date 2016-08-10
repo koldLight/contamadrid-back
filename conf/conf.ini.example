@@ -1,0 +1,6 @@
+[db]
+host = localhost
+user = contamadrid
+port = 5432
+pass = secret
+database = contamadrid
