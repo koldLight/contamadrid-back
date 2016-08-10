@@ -62,8 +62,9 @@ def query_db(db, query, args=(), one=False):
   return db.fetchall()
 
 
-def to_json(rows):
-  return json.dumps(rows, default=decimal_serializer)
+def to_json(rows, status=200, message="OK"):
+  result = {"status": status, "message": message, "data": rows}
+  return json.dumps(result, default=decimal_serializer)
 
 ###############################################################################
 # Controllers                                                                 #
